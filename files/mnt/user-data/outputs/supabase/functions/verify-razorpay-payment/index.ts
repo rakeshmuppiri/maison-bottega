@@ -5,8 +5,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET")!;
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get("https://xhdldiwvznjxkiedczun.supabase.co")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("sb_secret_058iYozLD09Ox4OD2IpdBg_A8jpJXmI")!;
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*", // tighten to your GitHub Pages origin once live
