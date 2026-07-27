@@ -924,7 +924,7 @@
      BACKEND CONFIG — replace these two values after you deploy
      the Supabase Edge Functions (see setup guide).
      ========================================================= */
-  const FUNCTIONS_BASE = "https://YOUR-PROJECT-REF.functions.supabase.co"; // TODO
+  const FUNCTIONS_BASE = "https://xhdldiwvznjxkiedczun.functions.supabase.co"; // TODO
   const CREATE_ORDER_URL = `${FUNCTIONS_BASE}/create-razorpay-order`;
   const VERIFY_PAYMENT_URL = `${FUNCTIONS_BASE}/verify-razorpay-payment`;
 
@@ -1075,7 +1075,9 @@
             });
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              showStatus('Order placed — merci & grazie! Check your email for confirmation.', 'success');
+
+              const orderNumber = verifyData.order_number || data.order_number || '';
+              showStatus(`Order ${orderNumber} placed — merci & grazie! Check your email for confirmation.`, 'success');
               cart = [];
               renderCart();
             } else {
