@@ -603,6 +603,32 @@
   </button>
 </header>
 
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+  <div class="cart-head">
+    <span class="eyebrow">Your Order</span>
+    <button class="cart-close" id="cartClose" aria-label="Close cart">✕</button>
+  </div>
+
+  <div class="cart-body" id="cartBody">
+    <p class="cart-empty" id="cartEmpty">Nothing in the box yet — add a pastry or six.</p>
+    <div class="cart-items" id="cartItems"></div>
+  </div>
+
+  <div class="cart-form" id="cartForm">
+    <div class="eyebrow" style="margin-bottom:0.9rem;">Delivery details</div>
+    <input type="text" id="custName" class="cart-input" placeholder="Full name" autocomplete="name">
+    <input type="email" id="custEmail" class="cart-input" placeholder="Email" autocomplete="email">
+    <input type="tel" id="custPhone" class="cart-input" placeholder="Phone (for delivery updates)" autocomplete="tel">
+  </div>
+
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal" class="mono">₹0</span></div>
+    <button class="cart-pay-btn" id="cartPayBtn" disabled>Pay &amp; Place Order</button>
+    <p class="cart-note">Payments handled by Razorpay. Card and UPI details never touch this site.</p>
+  </div>
+</aside>
+
 <section class="hero">
   <div class="hero-eyebrow">Est. 2016 · Paris &amp; Torino</div>
   <h1>Maison<br><em>&amp; Bottega</em></h1>
@@ -884,6 +910,16 @@
       });
     }, { threshold: 0.6 });
     darkSections.forEach(s => darkIO.observe(s));
+    window.addEventListener('scroll', () => {
+      const overDark = [...darkSections].some(s => {
+        const r = s.getBoundingClientRect();
+        return r.top < window.innerHeight/2 && r.bottom > window.innerHeight/2;
+      });
+      ring.classList.toggle('on-dark', overDark);
+      dot.classList.toggle('on-dark', overDark);
+    });
+  }
+
   /* =========================================================
      BACKEND CONFIG — replace these two values after you deploy
      the Supabase Edge Functions (see setup guide).
@@ -1069,32 +1105,6 @@
     }
   });
 </script>
-
-<div class="cart-overlay" id="cartOverlay"></div>
-<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
-  <div class="cart-head">
-    <span class="eyebrow">Your Order</span>
-    <button class="cart-close" id="cartClose" aria-label="Close cart">✕</button>
-  </div>
-
-  <div class="cart-body" id="cartBody">
-    <p class="cart-empty" id="cartEmpty">Nothing in the box yet — add a pastry or six.</p>
-    <div class="cart-items" id="cartItems"></div>
-  </div>
-
-  <div class="cart-form" id="cartForm">
-    <div class="eyebrow" style="margin-bottom:0.9rem;">Delivery details</div>
-    <input type="text" id="custName" class="cart-input" placeholder="Full name" autocomplete="name">
-    <input type="email" id="custEmail" class="cart-input" placeholder="Email" autocomplete="email">
-    <input type="tel" id="custPhone" class="cart-input" placeholder="Phone (for delivery updates)" autocomplete="tel">
-  </div>
-
-  <div class="cart-footer">
-    <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal" class="mono">₹0</span></div>
-    <button class="cart-pay-btn" id="cartPayBtn" disabled>Pay &amp; Place Order</button>
-    <p class="cart-note">Payments handled by Razorpay. Card and UPI details never touch this site.</p>
-  </div>
-</aside>
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </body>
