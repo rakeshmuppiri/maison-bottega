@@ -1,13 +1,13 @@
 // Deploy with: supabase functions deploy verify-razorpay-payment --no-verify-jwt
 //
-// Required secret: RAZORPAY_KEY_SECRET (same one used in create-razorpay-order)
+// Required secrets: RAZORPAY_KEY_SECRET, PROJECT_URL, SERVICE_ROLE_KEY
+// (same values used in create-razorpay-order)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RAZORPAY_KEY_SECRET = Deno.env.get("RAZORPAY_KEY_SECRET")!;
-const SUPABASE_URL = Deno.env.get("https://xhdldiwvznjxkiedczun.supabase.co")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("sb_secret_058iYozLD09Ox4OD2IpdBg_A8jpJXmI")!;
-
+const PROJECT_URL = Deno.env.get("PROJECT_URL")!;
+const SERVICE_ROLE_KEY = Deno.env.get("SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*", // tighten to your GitHub Pages origin once live
@@ -33,8 +33,8 @@ Deno.serve(async (req) => {
     const expected = await hmacHex(RAZORPAY_KEY_SECRET, `${razorpay_order_id}|${razorpay_payment_id}`);
     const valid = expected === razorpay_signature;
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-    await supabase
+    const supabase = createClient(PROJECT_URL, SERVICE_ROLE_KEY);
+    const { data: updated, error } = await supabase
       .from("orders")
       .update({
         status: valid ? "paid" : "failed",
@@ -42,11 +42,17 @@ Deno.serve(async (req) => {
         updated_at: new Date().toISOString(),
       })
       .eq("id", db_order_id)
-      .eq("razorpay_order_id", razorpay_order_id);
+      .eq("razorpay_order_id", razorpay_order_id)
+      .select()
+      .single();
 
-    return new Response(JSON.stringify({ success: valid }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        success: valid,
+        order_number: updated ? `MB-${String(updated.order_seq).padStart(7, "0")}` : null,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (e) {
     return new Response(JSON.stringify({ success: false, error: e.message }), {
       status: 500,
